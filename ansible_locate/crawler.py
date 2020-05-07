@@ -42,12 +42,12 @@ def crawl(playbook, write_meta=False):
     # print(json.dumps(data, indent=2))
     for i, play in enumerate(data):
         tasks = get_tasks_from_play(play)
-        if not tasks:
-            if 'name' in play:
-                print(f' skipping {play["name"]} because tasks not found')
-            else:
-                print(f' skipping {i}th play because tasks not found')
-        else:
+        # if not tasks:
+        #     if 'name' in play:
+        #         print(f' skipping {play["name"]} because tasks not found')
+        #     else:
+        #         print(f' skipping {i}th play because tasks not found')
+        if tasks:
             routing = locate_tasks(tasks)
             for key, value in routing.items():
                 print(f'   {playbook}: {key} --> {value}')

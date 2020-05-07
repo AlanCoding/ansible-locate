@@ -36,7 +36,6 @@ $ ansible-locate ~/Documents/repos/engineering/do_stuff.yml
 Locked and loaded with 3752 module redirects
 
 Inspecting playbook /Users/alancoding/Documents/repos/ansible-engineering/build_awx_production_images.yml
- skipping Build and push AWX Production Container Images because tasks not found
    roles/create_ec2_instances/tasks/main.yml: ec2 --> amazon.aws.ec2
    roles/access/tasks/main.yml: authorized_key --> ansible.posix.authorized_key
    roles/build_official_image/tasks/main.yml: docker_login --> community.general.docker_login
