@@ -1,4 +1,4 @@
-# Ansible Content Locator
+# Ansible Locate (for Collection Content)
 
 This is a tool which will walk around the YAML files in your playbook project
 and then suggest where to get that content from collections.
@@ -8,8 +8,8 @@ ansible-locate install.yml
 ```
 
 Will just print stuff. This may give you enough information to
-`ansible-galaxy collection install` the collections needed for your stuff
-to run.
+`ansible-galaxy collection install` the collections needed for the `install.yml`
+playbook to run. That comes with a few qualifiers about pathing issues.
 
 Having the collections alone is not enough, you also need to change the
 task names. In the narrow case of roles, there is another option to add

@@ -1,6 +1,6 @@
 import argparse
 
-from ansible_content_locator.crawler import crawl
+from ansible_locate.crawler import crawl
 
 parser = argparse.ArgumentParser(
     description=(

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='ansible-content-locator',
+    name='ansible-locate',
     version='1.0',
     author='alancoding',
     author_email='arominge@redhat.com',
@@ -11,8 +11,8 @@ setup(
     install_requires=['ansible'],
     entry_points={
         'console_scripts': [
-            'ansible-locate=ansible_content_locator.cli:main'
+            'ansible-locate=ansible_locate.cli:main'
         ],
     },
-    packages=['ansible_content_locator'],
+    packages=['ansible_locate'],
 )

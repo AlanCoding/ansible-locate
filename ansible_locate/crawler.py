@@ -1,6 +1,7 @@
 from ansible.parsing.utils.yaml import from_yaml
 from ansible.parsing.yaml.dumper import AnsibleDumper
-from ansible_content_locator.plugin_routing import _get_tombstones
+
+from ansible_locate.plugin_routing import _get_tombstones
 
 import json
 import yaml
