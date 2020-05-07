@@ -8,7 +8,7 @@ setup(
     author_email='arominge@redhat.com',
     description='Crawls playbooks, tells you where stuff lives.',
     license='MIT',
-    install_requires=['ansible'],
+    install_requires=['ansible-base'],
     entry_points={
         'console_scripts': [
             'ansible-locate=ansible_locate.cli:main'

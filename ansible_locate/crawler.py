@@ -29,7 +29,6 @@ def locate_tasks(tasks):
     for task in tasks:
         for key in task:
             if key in epitaphs:
-                print(f'   found {key}! moved to {epitaphs[key]["redirect"]}')
                 routing[key] = epitaphs[key]["redirect"]
     return routing
 
@@ -49,7 +48,9 @@ def crawl(playbook, write_meta=False):
             else:
                 print(f' skipping {i}th play because tasks not found')
         else:
-            locate_tasks(tasks)
+            routing = locate_tasks(tasks)
+            for key, value in routing.items():
+                print(f'   {playbook}: {key} --> {value}')
 
     # roles
     d = os.path.dirname(playbook)
@@ -62,7 +63,7 @@ def crawl(playbook, write_meta=False):
         if not os.path.isdir(role_dir):
             continue
         tasks_dir = os.path.join(role_dir, 'tasks')
-        print(f' inspecting role {subdir}')
+        # print(f' inspecting role {subdir}')
         if not os.path.exists(tasks_dir):
             continue
         routing = {}
@@ -76,14 +77,16 @@ def crawl(playbook, write_meta=False):
                 content = f.read()
             data = from_yaml(content)
             if data is None:
-                print(f'  skipping file {subdir}/tasks/{filename} because it looks empty')
+                # print(f'  skipping file {subdir}/tasks/{filename} because it looks empty')
                 continue
-            else:
-                print(f'  inspecting {subdir}/tasks/{filename}')
+            # else:
+            #     print(f'  inspecting {subdir}/tasks/{filename}')
             new_routing = locate_tasks(data)
+            for key, value in new_routing.items():
+                print(f'   roles/{subdir}/tasks/{filename}: {key} --> {value}')
             routing.update(new_routing)
-        print(' routing for role {subdir}:')
-        print(json.dumps(routing, indent=2))
+        # print(' routing for role {subdir}:')
+        # print(json.dumps(routing, indent=2))
         if write_meta:
             if not os.path.exists(os.path.join(role_dir, 'meta')):
                 continue

@@ -27,3 +27,19 @@ help to have so that Ansible 2.9 will pull content from your collections.
 Also, there is still the problem of knowing _what_ to install for
 legacy Ansible stuff, which this can still be useful for.
 
+#### Demo
+
+Some specifics may be removed here, as non-public content
+
+```
+$ ansible-locate ~/Documents/repos/engineering/do_stuff.yml
+Locked and loaded with 3752 module redirects
+
+Inspecting playbook /Users/alancoding/Documents/repos/ansible-engineering/build_awx_production_images.yml
+ skipping Build and push AWX Production Container Images because tasks not found
+   roles/create_ec2_instances/tasks/main.yml: ec2 --> amazon.aws.ec2
+   roles/access/tasks/main.yml: authorized_key --> ansible.posix.authorized_key
+   roles/build_official_image/tasks/main.yml: docker_login --> community.general.docker_login
+   roles/prepare-workspace/tasks/main.yaml: synchronize --> ansible.posix.synchronize
+```
+
