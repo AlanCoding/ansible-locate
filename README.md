@@ -43,3 +43,14 @@ Inspecting playbook /Users/alancoding/Documents/repos/ansible-engineering/build_
    roles/prepare-workspace/tasks/main.yaml: synchronize --> ansible.posix.synchronize
 ```
 
+#### Pathing Issues
+
+This is intended to be _project based_ not _runtime based_.
+
+You might put roles into all kinds of places on your computer, and then
+add them to search paths by `ansible.cfg`, environment variables, or heck,
+even collections.
+
+This tool will not follow those. It just looks in the `roles` directory
+relative to the location it was given.
+
