@@ -29,17 +29,95 @@ legacy Ansible stuff, which this can still be useful for.
 
 #### Demo
 
-Some specifics may be removed here, as non-public content
+This is not a great example, but it's a public repo...
 
 ```
-$ ansible-locate ~/Documents/repos/engineering/do_stuff.yml
+$ ansible-locate ~/Documents/repos/jlaska-ansible-playbooks/
 Locked and loaded with 3752 module redirects
 
-Inspecting playbook /Users/alancoding/Documents/repos/ansible-engineering/build_awx_production_images.yml
-   roles/create_ec2_instances/tasks/main.yml: ec2 --> amazon.aws.ec2
-   roles/access/tasks/main.yml: authorized_key --> ansible.posix.authorized_key
-   roles/build_official_image/tasks/main.yml: docker_login --> community.general.docker_login
-   roles/prepare-workspace/tasks/main.yaml: synchronize --> ansible.posix.synchronize
+Inspecting playbooks
+ skipping playbook /Users/alancoding/Documents/repos/jlaska-ansible-playbooks/custom_json_vars.yml
+ skipping playbook /Users/alancoding/Documents/repos/jlaska-ansible-playbooks/vaulted_debug_hostvars.yml
+  playbook /Users/alancoding/Documents/repos/jlaska-ansible-playbooks/async_tasks.yml
+    async_status --> ansible.windows.async_status
+ skipping playbook /Users/alancoding/Documents/repos/jlaska-ansible-playbooks/vault.yml
+ skipping playbook /Users/alancoding/Documents/repos/jlaska-ansible-playbooks/vaulted_ansible_env.yml
+  playbook /Users/alancoding/Documents/repos/jlaska-ansible-playbooks/tower_collection_smoke.yml
+    tower_job_launch --> awx.awx.tower_job_launch
+    tower_job_list --> awx.awx.tower_job_list
+
+Inspecting role directories
+
+Overall routing:
+---
+async_status: ansible.windows.async_status
+tower_job_launch: awx.awx.tower_job_launch
+tower_job_list: awx.awx.tower_job_list
+
+
+The collections/requirements.yml file you would need:
+---
+collections:
+  - awx.awx
+  - ansible.windows
+```
+
+Another public example:
+
+```
+$ ansible-locate ~/Documents/repos/utility-playbooks/
+Locked and loaded with 3752 module redirects
+
+Inspecting playbooks
+  playbook /Users/alancoding/Documents/repos/utility-playbooks/tower_module.yml
+    tower_organization --> awx.awx.tower_organization
+ skipping playbook /Users/alancoding/Documents/repos/utility-playbooks/contradict.yaml
+  playbook /Users/alancoding/Documents/repos/utility-playbooks/cloud_module_testing.yml
+    ec2 --> amazon.aws.ec2
+    os_server --> openstack.cloud.os_server
+    vmware_guest --> community.vmware.vmware_guest
+    ovirt_auth --> ovirt.ovirt.ovirt_auth
+    tower_inventory --> awx.awx.tower_inventory
+  playbook /Users/alancoding/Documents/repos/utility-playbooks/gce_lookup.yaml
+    gcp_compute_disk --> google.cloud.gcp_compute_disk
+  playbook /Users/alancoding/Documents/repos/utility-playbooks/tower_module_chris.yml
+    tower_organization --> awx.awx.tower_organization
+  playbook /Users/alancoding/Documents/repos/utility-playbooks/tower_module_ct.yml
+    tower_credential_type --> awx.awx.tower_credential_type
+
+Inspecting role directories
+  roles/awx-collection-publisher/tasks/main.yml
+    tower_organization --> awx.awx.tower_organization
+    tower_project --> awx.awx.tower_project
+    tower_inventory --> awx.awx.tower_inventory
+    tower_host --> awx.awx.tower_host
+    tower_credential_type --> awx.awx.tower_credential_type
+    tower_job_template --> awx.awx.tower_job_template
+
+Overall routing:
+---
+ec2: amazon.aws.ec2
+gcp_compute_disk: google.cloud.gcp_compute_disk
+os_server: openstack.cloud.os_server
+ovirt_auth: ovirt.ovirt.ovirt_auth
+tower_credential_type: awx.awx.tower_credential_type
+tower_host: awx.awx.tower_host
+tower_inventory: awx.awx.tower_inventory
+tower_job_template: awx.awx.tower_job_template
+tower_organization: awx.awx.tower_organization
+tower_project: awx.awx.tower_project
+vmware_guest: community.vmware.vmware_guest
+
+
+The collections/requirements.yml file you would need:
+---
+collections:
+  - openstack.cloud
+  - awx.awx
+  - community.vmware
+  - ovirt.ovirt
+  - amazon.aws
+  - google.cloud
 ```
 
 #### Pathing Behavior

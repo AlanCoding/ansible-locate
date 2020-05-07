@@ -10,7 +10,10 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument('--write-meta', action='store_true')
 # https://github.com/ansible/ansible/blob/devel/lib/ansible/cli/playbook.py
-parser.add_argument('playbook', help='Playbook(s)', metavar='playbook', nargs=1)
+parser.add_argument(
+    'playbook', help='Playbook(s), or directory with playbooks',
+    metavar='playbook', nargs=1
+)
 
 
 def main():

@@ -61,8 +61,8 @@ def inspect_playbook(playbook, write_names=False):
             return inspect_task_list(playbook, write_names=write_names)
         print(f' skipping playbook {playbook}')
         return routing
-    else:
-        print(f' inspecting playbook {playbook}')
+    # else:
+    #     print(f' inspecting playbook {playbook}')
     try:
         data = from_yaml(content)
     except Exception:
@@ -102,8 +102,10 @@ def crawl(location, write_meta=False):
         routing = {}
         for filename in list_yaml(playbook_dir):
             new_routing = inspect_playbook(filename)
+            if new_routing:
+                print(f'  playbook {filename}')
             for key, value in new_routing.items():
-                print(f'   {key} --> {value}')
+                print(f'    {key} --> {value}')
             routing.update(new_routing)
     else:
         print('Inspecting playbook {location}')
@@ -136,8 +138,10 @@ def crawl(location, write_meta=False):
             if not could_be_yaml(filename):
                 continue
             new_routing = inspect_task_list(file_path)
+            if new_routing:
+                print(f'  roles/{subdir}/tasks/{filename}')
             for key, value in new_routing.items():
-                print(f'   roles/{subdir}/tasks/{filename}: {key} --> {value}')
+                print(f'    {key} --> {value}')
             role_routing.update(new_routing)
         # print(' routing for role {subdir}:')
         # print(json.dumps(role_routing, indent=2))
@@ -167,10 +171,14 @@ def crawl(location, write_meta=False):
 
     print('')
     print('Overall routing:')
-    print(json.dumps(routing, indent=2))
+    # print(json.dumps(routing, indent=2))
+    print('---')
+    print(yaml.dump(routing, Dumper=AnsibleDumper))
 
     print('')
-    print('Collection needs:')
+    print('The collections/requirements.yml file you would need:')
+    print('---')
+    print('collections:')
     needs = set(
         fqcn.rsplit('.', 1)[0] for fqcn in routing.values()
     )
