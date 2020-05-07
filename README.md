@@ -42,7 +42,7 @@ Inspecting playbook /Users/alancoding/Documents/repos/ansible-engineering/build_
    roles/prepare-workspace/tasks/main.yaml: synchronize --> ansible.posix.synchronize
 ```
 
-#### Pathing Issues
+#### Pathing Behavior
 
 This is intended to be _project based_ not _runtime based_.
 
@@ -52,4 +52,15 @@ even collections.
 
 This tool will not follow those. It just looks in the `roles` directory
 relative to the location it was given.
+
+#### Known Issues
+
+If you use the `slurp` module, this tool will think it belongs in the
+windows collection. It does not. From IRC:
+
+> slurp is 'special case' and probably should be removed from routing,
+> some windows modules are 'attached' to their posix counterparts, slurp, fetch, setup ...
+
+So this is left broken for now, anticipating further churn.
+You may need to manually remove these entries.
 

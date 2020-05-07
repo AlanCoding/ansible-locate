@@ -2,6 +2,7 @@ from ansible.parsing.utils.yaml import from_yaml
 from ansible.parsing.yaml.dumper import AnsibleDumper
 
 from ansible_locate.plugin_routing import _get_tombstones
+from ansible_locate.isms import could_be_yaml, could_be_role, could_be_playbook
 
 import json
 import yaml
@@ -33,11 +34,40 @@ def locate_tasks(tasks):
     return routing
 
 
-def crawl(playbook, write_meta=False):
-    print(f'Inspecting playbook {playbook}')
+def inspect_task_list(filename, write_names=False):
+    with open(filename, 'r') as f:
+        content = f.read()
+    try:
+        data = from_yaml(content)
+    except Exception:
+        print(f'   could not read {filename} as YAML')
+        return {}
+    if not could_be_role(data):
+        # print(f'  skipping file {subdir}/tasks/{filename} because it looks empty')
+        return {}
+    # else:
+    #     print(f'  inspecting {subdir}/tasks/{filename}')
+    return locate_tasks(data)
+
+
+def inspect_playbook(playbook, write_names=False):
+    routing = {}
+
     with open(playbook, 'r') as f:
         content = f.read()
-    data = from_yaml(content)
+    if not could_be_playbook(content):
+        if could_be_role(content):
+            print(f' inspecting as task list {playbook}')
+            return inspect_task_list(playbook, write_names=write_names)
+        print(f' skipping playbook {playbook}')
+        return routing
+    else:
+        print(f' inspecting playbook {playbook}')
+    try:
+        data = from_yaml(content)
+    except Exception:
+        print(f'   could not read {playbook} as YAML')
+        return routing
     # print('print data')
     # print(json.dumps(data, indent=2))
     for i, play in enumerate(data):
@@ -48,16 +78,48 @@ def crawl(playbook, write_meta=False):
         #     else:
         #         print(f' skipping {i}th play because tasks not found')
         if tasks:
-            routing = locate_tasks(tasks)
-            for key, value in routing.items():
-                print(f'   {playbook}: {key} --> {value}')
+            new_routing = locate_tasks(tasks)
+            routing.update(new_routing)
+    return routing
+
+
+def list_yaml(dir):
+    r = []
+    for f in os.listdir(dir):
+        if not could_be_yaml(f):
+            continue
+        abs_path = os.path.join(dir, f)
+        if os.path.isdir(abs_path):
+            continue
+        r.append(abs_path)
+    return r
+
+
+def crawl(location, write_meta=False):
+    if os.path.isdir(location):
+        print('Inspecting playbooks')
+        playbook_dir = location
+        routing = {}
+        for filename in list_yaml(playbook_dir):
+            new_routing = inspect_playbook(filename)
+            for key, value in new_routing.items():
+                print(f'   {key} --> {value}')
+            routing.update(new_routing)
+    else:
+        print('Inspecting playbook {location}')
+        playbook_dir = os.path.dirname(location)
+        routing = inspect_playbook(location)
+        for key, value in routing.items():
+            print(f'   {key} --> {value}')
 
     # roles
-    d = os.path.dirname(playbook)
-    roles_dir = os.path.join(d, 'roles')
+    print('')
+    roles_dir = os.path.join(playbook_dir, 'roles')
     if not os.path.exists(roles_dir):
         print('Found no roles dir, exiting')
         return
+    else:
+        print('Inspecting role directories')
     for subdir in os.listdir(roles_dir):
         role_dir = os.path.join(roles_dir, subdir)
         if not os.path.isdir(role_dir):
@@ -66,27 +128,19 @@ def crawl(playbook, write_meta=False):
         # print(f' inspecting role {subdir}')
         if not os.path.exists(tasks_dir):
             continue
-        routing = {}
+        role_routing = {}
         for filename in os.listdir(tasks_dir):
             file_path = os.path.join(tasks_dir, filename)
             if os.path.isdir(file_path):
                 continue
-            if not (filename.endswith('yml') or filename.endswith('yaml')):
+            if not could_be_yaml(filename):
                 continue
-            with open(file_path, 'r') as f:
-                content = f.read()
-            data = from_yaml(content)
-            if data is None:
-                # print(f'  skipping file {subdir}/tasks/{filename} because it looks empty')
-                continue
-            # else:
-            #     print(f'  inspecting {subdir}/tasks/{filename}')
-            new_routing = locate_tasks(data)
+            new_routing = inspect_task_list(file_path)
             for key, value in new_routing.items():
                 print(f'   roles/{subdir}/tasks/{filename}: {key} --> {value}')
-            routing.update(new_routing)
+            role_routing.update(new_routing)
         # print(' routing for role {subdir}:')
-        # print(json.dumps(routing, indent=2))
+        # print(json.dumps(role_routing, indent=2))
         if write_meta:
             if not os.path.exists(os.path.join(role_dir, 'meta')):
                 continue
@@ -98,9 +152,8 @@ def crawl(playbook, write_meta=False):
             else:
                 existing_data = {}
             need_collections = set(
-                value.rsplit('.', 1)[0] for value in routing.values()
+                value.rsplit('.', 1)[0] for value in role_routing.values()
             )
-            print(need_collections)
             existing_data['collections'] = sorted(list(need_collections))
 
             if existing_data == {'collections': []}:
@@ -110,3 +163,17 @@ def crawl(playbook, write_meta=False):
                 with open(meta_file, 'w') as f:
                     f.write(yaml.dump(existing_data, Dumper=AnsibleDumper))
 
+        routing.update(role_routing)
+
+    print('')
+    print('Overall routing:')
+    print(json.dumps(routing, indent=2))
+
+    print('')
+    print('Collection needs:')
+    needs = set(
+        fqcn.rsplit('.', 1)[0] for fqcn in routing.values()
+    )
+    for need in needs:
+        print(f'  - {need}')
+    print('')
