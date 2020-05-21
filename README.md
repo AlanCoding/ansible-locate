@@ -142,3 +142,19 @@ windows collection. It does not. From IRC:
 So this is left broken for now, anticipating further churn.
 You may need to manually remove these entries.
 
+### Similar things
+
+Lookup FQCN of plugins from Playbooks or task files, and print their FQCN from routing.yml
+https://gist.github.com/sivel/73a071faa7b37a851437a026aa94f7da
+
+Script to rewrite an Ansible playbook or tasks file to use plugin FQCN
+https://gist.github.com/sivel/1f850b7f577b9dc9466293034c82b19d
+
+Make a disposition CSV for ansible content
+https://gist.github.com/cidrblock/40a540c54abb6f8767f7da7a85c84a94
+
+https://github.com/ansible-network/collection_prep
+
+
+
+
