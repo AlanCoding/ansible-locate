@@ -19,7 +19,7 @@ def _get_tombstones():
     if not _tombstones:
         try:
             # can't use get_data here, as it causes a circular import
-            ts_path = os.path.join(os.path.dirname(sys.modules['ansible'].__file__), 'config/routing.yml')
+            ts_path = os.path.join(os.path.dirname(sys.modules['ansible'].__file__), 'config/ansible_builtin_runtime.yml')
             with open(ts_path, 'r') as tsfd:
                 _tombstones = yaml.safe_load(tsfd)
         except Exception as ex:
